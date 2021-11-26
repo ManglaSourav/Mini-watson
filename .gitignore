@@ -19,4 +19,8 @@ buildNumber.properties
 /httpRequests/
 .DS_Store
 *.docx
+/src/main/resources/wiki-data
+/src/main/resources/wiki-index
+
+
 
