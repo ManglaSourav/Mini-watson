@@ -11,20 +11,30 @@ public class Main {
 
         Engine engine = new Engine();
         LanguageModel lm = new LanguageModel();
-//        System.out.println("P@1: " + engine.Pa1());
-//        System.out.println("MMR: " + engine.MMR());
+        System.out.println("Applying BM25Similarity");
+        System.out.println("P@1: " + engine.Pa1());
+        System.out.println("MMR: " + engine.MMR());
 //        System.out.println("MAP: " + engine.MAP());
-//        System.out.println("Language Model performance " + lm.applyLM());
 
-//        engine.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(), new BooleanSimilarity(), new LMDirichletSimilarity()}));
-//        System.out.println("P@1: " + engine.Pa1());
-//        System.out.println("MMR: " + engine.MMR());
 
-//      Applying language model
-//        engine.setSimilarity(new BM25Similarity());
-//        System.out.println("P@1: " + engine.Pa1());
-//        System.out.println("MMR: " + engine.MMR());
-//        we.MRRBenchMark(100, false);
+        System.out.println("\n");
+        System.out.println("Applying BooleanSimilarity");
+        engine.setSimilarity(new BooleanSimilarity());
+        System.out.println("P@1: " + engine.Pa1());
+        System.out.println("MMR: " + engine.MMR());
+
+
+        System.out.println("\n");
+        System.out.println("Applying combination of BooleanSimilarity & BM25Similarity");
+        engine.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(), new BooleanSimilarity(), new TFIDF_Similarity()}));
+        System.out.println("P@1: " + engine.Pa1());
+        System.out.println("MMR: " + engine.MMR());
+
+
+        System.out.println("\n");
+        System.out.println("Part 5 soln");
+        System.out.println("Language Model performance " + lm.applyLM());
+
 
         lm.indexReader.close();
         engine.indexReader.close();

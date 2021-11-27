@@ -20,18 +20,19 @@ import java.util.regex.Pattern;
 
 public class IndexBuilder {
 
-
     public static void main(String[] args) throws URISyntaxException {
         IndexBuilder builder = new IndexBuilder();
         builder.buildIndex();
     }
+
 
     /*
       This method build out index.
       Read all files from wiki data directory and process each file.
     */
     public void buildIndex() {
-        System.out.println("Building index....");
+        System.out.println("Index Builder is running and your index is building...");
+        System.out.println("Please wait for some time -:) ");
         try {
             File indexFile = new File(Utils.getIndexPath());
             StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -58,7 +59,7 @@ public class IndexBuilder {
      * This method build out index.
      * Read all files from wiki data directory and process each file.
      *
-     * @param file   : preprocess given the file and add the content to index
+     * @param file   : preprocess the given file and add content to the index
      * @param writer : index writer object
      */
     public void putFileToIndex(File file, IndexWriter writer) {
@@ -116,10 +117,11 @@ public class IndexBuilder {
     private void addDoc(IndexWriter writer, String title, String categories, String headings, String content) throws IOException {
         Document doc = new Document();
         content = categories + " " + headings + " " + content;
-        doc.add(new StringField("docid", title, Field.Store.YES));
-        doc.add(new TextField("categories", Utils.preprocessText(categories), Field.Store.YES));
-        doc.add(new TextField("headings", Utils.preprocessText(headings), Field.Store.YES));
-        doc.add(new TextField("content", Utils.preprocessText(content), Field.Store.YES));
+//        Utils.setDoLemma(true);
+//        Utils.setDoStemming(true);
+        doc.add(new StringField("title", title, Field.Store.YES));
+        doc.add(new TextField("categories", Utils.lemmas_and_stem(categories), Field.Store.YES));
+        doc.add(new TextField("content", Utils.lemmas_and_stem(content), Field.Store.YES));
         writer.addDocument(doc);
     }
 

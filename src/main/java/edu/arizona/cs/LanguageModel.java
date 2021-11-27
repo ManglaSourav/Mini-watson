@@ -1,6 +1,5 @@
 package edu.arizona.cs;
 
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -12,9 +11,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
-import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -32,6 +29,9 @@ public class LanguageModel {
     IndexReader indexReader;
     List<Queries> queries = new ArrayList<>();
 
+    /**
+     * Constructor: It loads the pre-built index and it also loads all 100 question in memory from the file
+     */
     public LanguageModel() {
         try {
             String indexPath = Utils.getIndexPath();
@@ -84,6 +84,13 @@ public class LanguageModel {
         }
     }
 
+    /**
+     * This method apply Language model on query one by one and measure performance using MMR and I’m using LMDirichletSimilarity  similarity as a scoring function which is giving me higher performance.
+     *
+     * @return Performance score of the language model
+     * @throws IOException
+     * @throws ParseException
+     */
     public double applyLM() throws IOException, ParseException {
 
         double mmr_result = 0;
@@ -94,7 +101,7 @@ public class LanguageModel {
 //            System.out.println(query.getAnswer());
 //            System.out.println(totalHits.get(0).DocName.get("docid"));
             for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
-                if (query.getAnswer().contains(totalHits.get(rank).DocName.get("docid"))) {
+                if (query.getAnswer().contains(totalHits.get(rank).DocName.get("title"))) {
                     mmr_result += (double) 1 / (rank + 1);
                     break; // break after we found first correct document on rank+1 position
                 }
@@ -108,9 +115,19 @@ public class LanguageModel {
         return mmr_result;
     }
 
-    public List<ResultClass> LM_With_Dirichlet_smoothing(String question, int hitPerPage) throws ParseException, IOException {
+
+    /**
+     * This method has actual model and smoothing implementation for a given question.
+     *
+     * @param question :  asked question with clue
+     * @param hits     : Number of docs to check
+     * @return top score docs by language model
+     * @throws ParseException
+     * @throws IOException
+     */
+    public List<ResultClass> LM_With_Dirichlet_smoothing(String question, int hits) throws ParseException, IOException {
         Query parsedQuery = new QueryParser("content", analyzer).parse(QueryParser.escape(question));
-        TopDocs topDocs = searcher.search(parsedQuery, hitPerPage);
+        TopDocs topDocs = searcher.search(parsedQuery, hits);
         Map<Integer, List<String>> docs = new HashMap<>();
         List<ResultClass> finalResult = new ArrayList<>();
         String[] questionTokens = question.split(" ");
@@ -124,8 +141,6 @@ public class LanguageModel {
             int docID = scoreDoc.doc;
             Document doc = searcher.doc(docID);
             List<String> docTokens = docs.get(scoreDoc.doc);
-//            System.out.println(tokens);
-//            System.out.println(Arrays.toString(queryArr));
             double totalProbabilityScoreOfDoc = 1;
             for (String qToken : questionTokens) {
                 int tf = Collections.frequency(docTokens, qToken);
