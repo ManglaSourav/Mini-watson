@@ -32,7 +32,6 @@ public class IndexBuilder {
         builder.buildIndex();
     }
 
-
     /*
       This method build out index.
       Read all files from wiki data directory and process each file.
@@ -83,6 +82,14 @@ public class IndexBuilder {
                 String line = inputScanner.nextLine();
                 if (line.equals('\n')) {
                     continue;
+                } else if ((headingMatcher = Pattern.compile("\\=\\=.*\\=\\=\\n?").matcher(line)).matches()) {
+                    String temp = Utils.clean(headingMatcher.toMatchResult().group().replace('=', ' ').trim() + " ");
+                    if (temp.isEmpty() || temp == null) {
+                        continue;
+                    }
+                    headings.append(temp).append(" ");
+                } else if (line.indexOf("CATEGORIES:") == 0) {
+                    categories = Utils.clean(line.substring(12));
                 } else if ((PageStarterMatcher = Pattern.compile("\\[\\[.*\\]\\]\\n?").matcher(line)).matches()) {
                     // Whenever i got new wiki page in a file I dumped the last page and create new page for current wiki page;
                     if (!title.equals("")) {
@@ -93,14 +100,6 @@ public class IndexBuilder {
                     categories = "";
                     headings = new StringBuilder();
 
-                } else if ((headingMatcher = Pattern.compile("\\=\\=.*\\=\\=\\n?").matcher(line)).matches()) {
-                    String temp = Utils.clean(headingMatcher.toMatchResult().group().replace('=', ' ').trim() + " ");
-                    if (temp.isEmpty() || temp == null) {
-                        continue;
-                    }
-                    headings.append(temp).append(" ");
-                } else if (line.indexOf("CATEGORIES:") == 0) {
-                    categories = Utils.clean(line.substring(12));
                 } else {
                     result.append(Utils.clean(line));
                     result.append(" ");
@@ -122,14 +121,14 @@ public class IndexBuilder {
      * @throws IOException
      */
     private void addDoc(IndexWriter writer, String title, String categories, String headings, String content) throws IOException {
-        Document doc = new Document();
+        Document newDoc = new Document();
         content = categories + " " + headings + " " + content;
 //        Utils.setDoLemma(true);
 //        Utils.setDoStemming(true);
-        doc.add(new StringField("title", title, Field.Store.YES));
-        doc.add(new TextField("categories", Utils.lemmas_and_stem(categories), Field.Store.YES));
-        doc.add(new TextField("content", Utils.lemmas_and_stem(content), Field.Store.YES));
-        writer.addDocument(doc);
+        newDoc.add(new StringField("title", title, Field.Store.YES));
+        newDoc.add(new TextField("categories", Utils.lemmas_and_stem(categories), Field.Store.YES));
+        newDoc.add(new TextField("content", Utils.lemmas_and_stem(content), Field.Store.YES));
+        writer.addDocument(newDoc);
     }
 
 }

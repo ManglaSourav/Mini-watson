@@ -102,7 +102,7 @@ public class Engine {
         for (Queries query : queries) {
             List<ResultClass> ans = searchInLucene(query.getClue() + " " + query.getQuestion(), hits);
 //            System.out.println(query.getAnswer());
-//            System.out.println(ans.get(0).DocName.get("docid"));
+//            System.out.println(ans.get(0).DocName.get("title"));
             if (query.getAnswer().contains(ans.get(0).DocName.get("title"))) {
                 correct++;
             }
@@ -125,7 +125,7 @@ public class Engine {
                 List<ResultClass> totalHits = searchInLucene(question.getClue() + " " + question.getQuestion(), hits);
 //                System.out.println();
 //                System.out.println("Actual answer " + question.getAnswer());
-//                System.out.println("resulted Answer " + totalHits.get(0).DocName.get("docid"));
+//                System.out.println("resulted Answer " + totalHits.get(0).DocName.get("title"));
 
                 if (question.getAnswer().contains(totalHits.get(0).DocName.get("title"))) {
                     mmr += 1.0; // if document found on first position;
@@ -133,7 +133,7 @@ public class Engine {
                     for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
                         if (totalHits.get(rank).DocName.get("title").contains(question.getAnswer())) {
                             mmr += (double) 1 / (rank + 1);
-//                            System.out.println("at position " + rank + "  " + totalHits.get(rank).DocName.get("docid"));
+//                            System.out.println("at position " + rank + "  " + totalHits.get(rank).DocName.get("title"));
                             break; // break after we found first correct document on rank+1 position
                         }
                     }

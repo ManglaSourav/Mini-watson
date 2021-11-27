@@ -67,9 +67,13 @@ public class Utils {
         return str
                 .replaceAll("[^ a-zA-Z\\d]", " ")
                 .replaceAll("\n", " ")
-                .replaceAll("\\[tpl\\].*\\[\\/tpl\\]", " ")
+                .replaceAll("\\[\\s*tpl\\s*\\]", " ")
+                .replaceAll("\\[\\s*/\\s*tpl\\s*\\]", " ")
+                .replaceAll("https ?://\\\\S+\\\\s?", "")
+//                .replaceAll("\\[tpl\\].*\\[\\/tpl\\]", " ")
                 .toLowerCase()
                 .trim();
+
     }
 
     /**

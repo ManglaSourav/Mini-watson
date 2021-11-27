@@ -23,23 +23,17 @@ public class Main {
         System.out.println("MMR: " + engine.MMR());
 //        System.out.println("MAP: " + engine.MAP());
 
-
-        System.out.println("\n");
-        System.out.println("Applying BooleanSimilarity");
+        System.out.println("\nApplying BooleanSimilarity");
         engine.setSimilarity(new BooleanSimilarity());
         System.out.println("P@1: " + engine.Pa1());
         System.out.println("MMR: " + engine.MMR());
 
-
-        System.out.println("\n");
-        System.out.println("Applying combination of BooleanSimilarity & BM25Similarity");
+        System.out.println("\nApplying MultiSimilarity : BooleanSimilarity & BM25Similarity & TFIDF_Similarity");
         engine.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(), new BooleanSimilarity(), new TFIDF_Similarity()}));
         System.out.println("P@1: " + engine.Pa1());
         System.out.println("MMR: " + engine.MMR());
 
-
-        System.out.println("\n");
-        System.out.println("Part 5 soln");
+        System.out.println("\nPart 5 soln");
         System.out.println("Language Model performance " + lm.applyLM());
 
 

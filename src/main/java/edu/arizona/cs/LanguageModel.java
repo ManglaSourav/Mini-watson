@@ -101,7 +101,7 @@ public class LanguageModel {
     public double applyLM() throws IOException, ParseException {
 
         double mmr_result = 0;
-
+        System.out.println("wait....model is calculating the score");
         for (Queries query : queries) {
             List<ResultClass> totalHits = LM_With_Dirichlet_smoothing(query.getClue() + " " + query.getQuestion(), numerOfHits);
 //            System.out.println();
