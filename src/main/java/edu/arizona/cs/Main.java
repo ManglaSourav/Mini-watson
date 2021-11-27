@@ -1,3 +1,10 @@
+/*
+Titla - Jeopardy Project
+Name- Sourav Mangla
+Subject - CSC 483/583: Text Retrieval and Web Search
+Instructor - Mihai Surdeanu
+TA - Shahriar Golchin
+ */
 package edu.arizona.cs;
 
 import org.apache.lucene.queryparser.classic.ParseException;
