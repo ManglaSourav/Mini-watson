@@ -60,7 +60,7 @@ public class LanguageModel {
                         nextQuestion = 2;
                         continue;
                     } else if (nextQuestion == 0) {
-                        query.setAnswer(Utils.clean(line));
+                        query.setAnswer(Utils.cleanAndTrim(line));
                         queries.add(query);
                         query = new Queries();
                     } else if (nextQuestion == 1) {

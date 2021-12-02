@@ -58,7 +58,7 @@ public class Engine {
                         nextQuestion = 2;
                         continue;
                     } else if (nextQuestion == 0) {
-                        query.setAnswer(Utils.clean(line));
+                        query.setAnswer(Utils.cleanAndTrim(line));
                         queries.add(query);
                         query = new Queries();
                     } else if (nextQuestion == 1) {
@@ -189,7 +189,7 @@ public class Engine {
         List<ResultClass> resultDocs = new ArrayList<>();
         Utils.setDoLemma(true);
 //        Utils.setDoStemming(true); //lowering the performance
-        query = Utils.lemmas_and_stem(Utils.clean(query));
+        query = Utils.lemmas_and_stem(Utils.cleanAndTrim(query));
         try {
             Query q = new QueryParser("content", analyzer).parse(query);
             searcher.setSimilarity(similarity);

@@ -83,25 +83,26 @@ public class IndexBuilder {
                 if (line.equals('\n')) {
                     continue;
                 } else if ((headingMatcher = Pattern.compile("\\=\\=.*\\=\\=\\n?").matcher(line)).matches()) {
-                    String temp = Utils.clean(headingMatcher.toMatchResult().group().replace('=', ' ').trim() + " ");
-                    if (temp.isEmpty() || temp == null) {
+                    String temp = Utils.cleanAndTrim(headingMatcher.toMatchResult().group().replace('=', ' ').trim() + " ");
+                    if (temp.isEmpty()) {
                         continue;
                     }
                     headings.append(temp).append(" ");
                 } else if (line.indexOf("CATEGORIES:") == 0) {
-                    categories = Utils.clean(line.substring(12));
+                    categories = Utils.cleanAndTrim(line.substring(12));
                 } else if ((PageStarterMatcher = Pattern.compile("\\[\\[.*\\]\\]\\n?").matcher(line)).matches()) {
                     // Whenever i got new wiki page in a file I dumped the last page and create new page for current wiki page;
                     if (!title.equals("")) {
+                        result = new StringBuilder(categories + " " + headings + " " + result);
                         addDoc(writer, title, categories, headings.toString(), result.toString());
                     }
-                    title = Utils.clean(PageStarterMatcher.toMatchResult().group().replace('[', ' ').replace(']', ' ').trim());
+                    title = Utils.cleanAndTrim(PageStarterMatcher.toMatchResult().group().replace('[', ' ').replace(']', ' ').trim());
                     result = new StringBuilder();
                     categories = "";
                     headings = new StringBuilder();
 
                 } else {
-                    result.append(Utils.clean(line));
+                    result.append(Utils.cleanAndTrim(Utils.cleanTPLTags(Utils.cleanLinks(line))));
                     result.append(" ");
                 }
             }
@@ -122,7 +123,6 @@ public class IndexBuilder {
      */
     private void addDoc(IndexWriter writer, String title, String categories, String headings, String content) throws IOException {
         Document newDoc = new Document();
-        content = categories + " " + headings + " " + content;
 //        Utils.setDoLemma(true);
 //        Utils.setDoStemming(true);
         newDoc.add(new StringField("title", title, Field.Store.YES));

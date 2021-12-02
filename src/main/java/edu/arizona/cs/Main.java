@@ -18,6 +18,8 @@ public class Main {
 
         Engine engine = new Engine();
         LanguageModel lm = new LanguageModel();
+
+        System.out.println("It won't take more than 1 minute to run all the models");
         System.out.println("Applying BM25Similarity");
         System.out.println("P@1: " + engine.Pa1());
         System.out.println("MMR: " + engine.MMR());
@@ -37,6 +39,12 @@ public class Main {
         System.out.println("Language Model performance " + lm.applyLM());
 
 
+        System.out.println("\nBonus part soln");
+        System.out.println("Word2vec is processing....");
+        Word2Vec word2Vec = new Word2Vec();
+        System.out.println("MMR for word2vec : " + word2Vec.MMR());
+
+        word2Vec.indexReader.close();
         lm.indexReader.close();
         engine.indexReader.close();
     }

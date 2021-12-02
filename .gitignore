@@ -21,6 +21,7 @@ buildNumber.properties
 *.docx
 /src/main/resources/wiki-data
 /src/main/resources/wiki-index
+/src/main/resources/glove.6B
 
 
 

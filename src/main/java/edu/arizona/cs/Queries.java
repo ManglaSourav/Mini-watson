@@ -8,10 +8,29 @@ TA - Shahriar Golchin
 package edu.arizona.cs;
 
 
+import java.util.ArrayList;
+
 class Queries {
-    private String clue = "";
-    private String question = "";
-    private String answer = "";
+    private String clue;
+    private String question;
+    private String answer;
+    private ArrayList<Double> embedding;
+
+    public Queries() {
+        String clue = "";
+        String question = "";
+        String answer = "";
+        embedding = new ArrayList<>();
+
+    }
+
+    public ArrayList<Double> getEmbedding() {
+        return embedding;
+    }
+
+    public void setEmbedding(ArrayList<Double> embedding) {
+        this.embedding = embedding;
+    }
 
     public String getClue() {
         return clue;
