@@ -1,3 +1,10 @@
+/*
+Titla - Jeopardy Project
+Name- Sourav Mangla
+Subject - CSC 483/583: Text Retrieval and Web Search
+Instructor - Mihai Surdeanu
+TA - Shahriar Golchin
+ */
 package edu.arizona.cs;
 
 
@@ -30,6 +37,9 @@ public class Word2Vec {
     List<Queries> queries;
     HashMap<String, ArrayList<Double>> trainedEmbeddings;
 
+    /**
+     * Constructor: It loads the pre-built index and pre-trained embeddings from "glove.6B.100d.txt" and it also loads all 100 question in memory and calculate questions' word2vec embeddings
+     */
     public Word2Vec() {
         try {
             queries = new ArrayList<>();
@@ -58,7 +68,7 @@ public class Word2Vec {
                     } else if (nextQuestion == 1) {
                         // get the embedding for the query and average the embeddings for each word
                         String askedQuery = Utils.cleanAndTrim(line);
-                        query.setEmbedding(calculateAvgEmbeddingForSentence(askedQuery));
+                        query.setEmbedding(avgEmbeddingForSentence(askedQuery));
                         query.setQuery(askedQuery);
                     } else if (nextQuestion == 2) {
                         query.setClue(Utils.cleanAndTrim(line));
@@ -79,7 +89,13 @@ public class Word2Vec {
         System.out.println("MMR in word2vec : " + word2Vec.MMR());
     }
 
-    private ArrayList<Double> calculateAvgEmbeddingForSentence(String sentence) {
+    /**
+     * This is a helper function to calculate average embedding for a sentence.
+     *
+     * @param sentence : calculate word2vec embedding for the sentence
+     * @return embedding vector
+     */
+    private ArrayList<Double> avgEmbeddingForSentence(String sentence) {
         String keyWord = "";
         ArrayList<Double> sentenceEmbedding = new ArrayList<>();
         String[] words = sentence.split("\\s+");
@@ -111,6 +127,9 @@ public class Word2Vec {
         return sentenceEmbedding;
     }
 
+    /**
+     * This method hold load pre-tained glove embedding into the memory
+     */
     private void loadGloveEmbeddings() {
         try {
             File queryFile = new File(Word2Vec.class.getClassLoader().getResource(Utils.getEmbeddingPath()).toURI());
@@ -141,7 +160,7 @@ public class Word2Vec {
     }
 
     /**
-     * This method implement the P@1 performance measure
+     * This method implement the MMR performance measure
      */
     public double MMR() {
         try {
@@ -175,10 +194,11 @@ public class Word2Vec {
     }
 
     /**
-     * This method search our question's answer in the lucene and build embedding vector for the docs and perform cosine similarity between doc vs query embedding vector  and return the result
+     * This method search our question's answer in the lucene and build embedding vector for the docs and
+     * perform cosine similarity between doc vs query embedding vector, then return the result
      *
-     * @param query : object containing question clue answer and question embedding vector
-     * @return list of docs which are returned by the lucene
+     * @param query : object containing question, clue, answer, and question embedding vector
+     * @return list of docs which are reranked using cosine scores
      */
     public List<ResultClass> searchInLucene(Queries query) throws ParseException, IOException {
 
@@ -191,11 +211,13 @@ public class Word2Vec {
 
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
             String docContent = searcher.doc(scoreDoc.doc).get("content");
-            ArrayList<Double> docEmbedding = calculateAvgEmbeddingForSentence(docContent.substring(0, Math.min(docContent.length(), 99)));
+            // I have removed all the special character so instead of selecting first sentence, I'm selecting sentence of length 150
+            ArrayList<Double> docEmbedding = avgEmbeddingForSentence(docContent.substring(0, Math.min(docContent.length(), 150)));
             Document doc = searcher.doc(scoreDoc.doc);
             Double cosineScore = calculateCosineScore(questionEmbedding, docEmbedding);
             finalResult.add(new ResultClass(doc, cosineScore));
         }
+        //sorting documents on the basis of new cosine score
         finalResult.sort(new Comparator<ResultClass>() {
             @Override
             public int compare(ResultClass r1, ResultClass r2) {

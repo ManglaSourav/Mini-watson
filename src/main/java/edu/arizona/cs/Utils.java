@@ -17,10 +17,11 @@ import java.util.List;
 
 public class Utils {
 
+    // Everything must be inside resource directory
     private final static String queriesFilePath = "questions.txt";
     private final static String wikiPagesDataPath = "wiki-data";
     private final static String indexPath = System.getProperty("user.dir") + "/src/main/resources/wiki-index";
-    private final static String embeddingPath = "glove.6B/glove.6B.100d.txt";
+    private final static String embeddingPath = "glove.6B.100d.txt";
     private static final String[] stopWordsList = new String[]{
             "a", "an", "about", "actually", "and", "are", "as", "at", "be", "but", "by",
             "for", "if", "in", "into", "is", "it", "s",
