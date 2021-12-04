@@ -80,7 +80,9 @@ public class Engine {
 
     public static void main(String[] args) throws IOException, ParseException {
         Engine engine = new Engine();
+//        System.out.println("P@1: " + engine.Pa1());
         System.out.println("MMR: " + engine.MMR());
+
         engine.indexReader.close();
     }
 
@@ -121,6 +123,7 @@ public class Engine {
             int hits = 10;
 
             double mmr = 0;
+//            int countInccorectAnswer = 0;
             for (Queries question : queries) {
                 List<ResultClass> totalHits = searchInLucene(question.getClue() + " " + question.getQuestion(), hits);
 //                System.out.println();
@@ -135,6 +138,12 @@ public class Engine {
                             mmr += (double) 1 / (rank + 1);
 //                            System.out.println("at position " + rank + "  " + totalHits.get(rank).DocName.get("title"));
                             break; // break after we found first correct document on rank+1 position
+                        } else {
+//                            for error analysis: to which for question i'm getting wrong answers
+//                            if (rank == totalHits.size() - 1) {
+//                                System.out.println(countInccorectAnswer + ": " + question.getQuestion());
+//                                countInccorectAnswer++;
+//                            }
                         }
                     }
                 }
