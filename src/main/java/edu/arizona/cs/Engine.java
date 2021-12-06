@@ -81,7 +81,7 @@ public class Engine {
     public static void main(String[] args) throws IOException, ParseException {
         Engine engine = new Engine();
 //        System.out.println("P@1: " + engine.Pa1());
-        System.out.println("MMR: " + engine.MMR());
+        System.out.println("MRR: " + engine.MRR());
 
         engine.indexReader.close();
     }
@@ -117,39 +117,34 @@ public class Engine {
      *
      * @return the performance score.
      */
-    public double MMR() {
+    public double MRR() {
         try {
-            double mmr_result = 0;
+            double mrr_result = 0;
             int hits = 10;
 
-            double mmr = 0;
+            double mrr = 0;
 //            int countInccorectAnswer = 0;
             for (Queries question : queries) {
                 List<ResultClass> totalHits = searchInLucene(question.getClue() + " " + question.getQuestion(), hits);
 //                System.out.println();
 //                System.out.println("Actual answer " + question.getAnswer());
 //                System.out.println("resulted Answer " + totalHits.get(0).DocName.get("title"));
-
-                if (question.getAnswer().contains(totalHits.get(0).DocName.get("title"))) {
-                    mmr += 1.0; // if document found on first position;
-                } else {
-                    for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
-                        if (totalHits.get(rank).DocName.get("title").contains(question.getAnswer())) {
-                            mmr += (double) 1 / (rank + 1);
+                for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
+                    if (totalHits.get(rank).DocName.get("title").contains(question.getAnswer())) {
+                        mrr += (double) 1 / (rank + 1);
 //                            System.out.println("at position " + rank + "  " + totalHits.get(rank).DocName.get("title"));
-                            break; // break after we found first correct document on rank+1 position
-                        } else {
+                        break; // break after we found first correct document on rank+1 position (+1 is for hit count start from 0)
+                    } else {
 //                            for error analysis: to which for question i'm getting wrong answers
 //                            if (rank == totalHits.size() - 1) {
 //                                System.out.println(countInccorectAnswer + ": " + question.getQuestion());
 //                                countInccorectAnswer++;
 //                            }
-                        }
                     }
                 }
             }
-            mmr_result = (double) mmr / queries.size();
-            return mmr_result;
+            mrr_result = (double) mrr / queries.size();
+            return mrr_result;
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -157,13 +152,13 @@ public class Engine {
     }
 
     /**
-     * This method implement the MAP performance measure But it perform similar to MMR because we have only one relevant document
+     * This method implement the MAP performance measure But it perform similar to MRR because we have only one relevant document
      *
      * @return the performance score.
      */
     public double MAP() {
         try {
-            //m = number of relevant document is one in this problem, so MAP become similar to MMR
+            //m = number of relevant document is one in this problem, so MAP become similar to MRR
 
             double map_result = 0;
             int hits = 50;

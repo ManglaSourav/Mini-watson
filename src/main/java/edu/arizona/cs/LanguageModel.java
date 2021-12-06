@@ -92,7 +92,7 @@ public class LanguageModel {
     }
 
     /**
-     * This method apply Language model on query one by one and measure performance using MMR and I’m using LMDirichletSimilarity  similarity as a scoring function which is giving me higher performance.
+     * This method apply Language model on query one by one and measure performance using MRR and I’m using LMDirichletSimilarity  similarity as a scoring function which is giving me higher performance.
      *
      * @return Performance score of the language model
      * @throws IOException
@@ -100,7 +100,7 @@ public class LanguageModel {
      */
     public double applyLM() throws IOException, ParseException {
 
-        double mmr_result = 0;
+        double mrr_result = 0;
         System.out.println("wait....model is calculating the score");
         for (Queries query : queries) {
             List<ResultClass> totalHits = LM_With_Dirichlet_smoothing(query.getClue() + " " + query.getQuestion(), numerOfHits);
@@ -109,17 +109,16 @@ public class LanguageModel {
 //            System.out.println(totalHits.get(0).DocName.get("docid"));
             for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
                 if (query.getAnswer().contains(totalHits.get(rank).DocName.get("title"))) {
-                    mmr_result += (double) 1 / (rank + 1);
+                    mrr_result += (double) 1 / (rank + 1);
                     break; // break after we found first correct document on rank+1 position
                 }
-
             }
         }
 
-        mmr_result = mmr_result / (double) queries.size();
+        mrr_result = mrr_result / (double) queries.size();
 //        double pa1_result = (double) correct / queries.size();
 //        Systexm.out.println("pa1_result@1 " + pa1_result);
-        return mmr_result;
+        return mrr_result;
     }
 
 
