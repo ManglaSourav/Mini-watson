@@ -86,7 +86,7 @@ public class Word2Vec {
 
     public static void main(String[] args) {
         Word2Vec word2Vec = new Word2Vec();
-        System.out.println("MMR in word2vec : " + word2Vec.MMR());
+        System.out.println("MRR in word2vec : " + word2Vec.MRR());
     }
 
     /**
@@ -160,33 +160,30 @@ public class Word2Vec {
     }
 
     /**
-     * This method implement the MMR performance measure
+     * This method implement the MRR performance measure
      */
-    public double MMR() {
+    public double MRR() {
         try {
-            double mmr_result = 0;
-
-            double mmr = 0;
+            double mrr = 0;
             for (Queries question : queries) {
                 List<ResultClass> totalHits = searchInLucene(question);
 //                System.out.println("Actual answer " + question.getAnswer());
 //                System.out.println("resulted Answer " + totalHits.get(0).DocName.get("title"));
 
                 if (question.getAnswer().contains(totalHits.get(0).DocName.get("title"))) {
-                    mmr += 1.0; // if document found on first position;
+                    mrr += 1.0; // if document found on first position;
                 } else {
                     for (int rank = 0; rank < totalHits.size(); rank++) { // check if we have correct document in top 10 hits
 //                        System.out.println(totalHits.get(rank).docScore);
                         if (totalHits.get(rank).DocName.get("title").contains(question.getAnswer())) {
-                            mmr += (double) 1 / (rank + 1);
+                            mrr += (double) 1 / (rank + 1);
 //                            System.out.println("at position " + rank + "  " + totalHits.get(rank).DocName.get("title"));
                             break; // break after we found first correct document on rank+1 position
                         }
                     }
                 }
             }
-            mmr_result = (double) mmr / queries.size();
-            return mmr_result;
+            return (double) mrr / queries.size();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
